@@ -1,0 +1,82 @@
+mstream 0.1
+============
+console based mumble (music) streamer
+
+About
+======
+  mstream is a console-based utility, which connects to
+  mumble server as a regular user and plays music to
+  specific channel.
+
+  It spawns sox process to convert supported formats
+  (.mp3, .ogg, .wav) on the fly to raw format, which
+  is then encoded by using celt library.
+
+  Features:
+  - builds simple playlist by scanning directory
+  - allows shuffling playlist
+  - allows repeating playlist
+  - basic control over console, which allows
+    simple playlist and volume control
+  - streams music only when there is someone
+    listeting (present in channel)
+
+  Copyright (C) 2013 Jan Stancek <jan@stancek.eu>
+
+
+Dependencies and building
+==========================
+1. linux distro (preferrably Debian Wheezy)
+
+2. needed packages:
+   # apt-get install gcc make python2.7 python-protobuf sox libsox-fmt-mp3
+
+3. Building
+   # make
+
+
+Configuration
+==============
+  Current version has no external settings file, so you have to edit
+  the source code (single python file): mstream.py.
+
+  IMPORTANT: You should at least make sure that stream quality is lower than
+             your mumble server settings, otherwise mumble server starts
+             dropping your packets. See SERVER_MAXBANDWIDTH below.
+
+  Look for following variables in Config class:
+    SCREEN_LOG_LEVEL     - level of messages that go to screen
+                           logging.INFO, logging.WARNING, logging.DEBUG
+    FILE_LOG_LEVEL       - level of messages that go to mstream.log file
+    FRAMES_IN_PACKET     - how many frames to send in one packet, one frame
+                           corresponds to 10ms
+    SERVER_MAXBANDWIDTH  - server bandwidth in bytes
+                           ('bandwidth' from /etc/mumble-server.ini) / 8
+    ENCSIZE              - your preffered quality, from 1 to 127
+                           this is number of bytes for each frame,
+                           there are 100 frames sent each second
+                           If this is higher than SERVER_MAXBANDWIDTH allows,
+                           automated value is calculated from SERVER_MAXBANDWIDTH
+    VOLUME               - default volume: from 0.1 to 1.0
+
+
+Usage
+======
+   # python mstream.py -s 192.168.1.1 --password secret --channel room1 \
+         --repeat --random --dir /root/music
+   Connect to server 192.168.1.1 with password secret.
+   Build playlist from all music files in /root/music and shuffle it.
+   Keep repeating the playlist - if end is reached start over again.
+
+   Keys you can use to control it from command line:
+
+        q       - quit
+        <space> - pause
+        n       - next in playlist
+        p       - prev in playlist
+        a       - restart current item in playlist
+        r       - jump to random item in playlist
+        +       - volume up, takes effect only at start of new playlist item
+        -       - volume down, takes effect only at start of new playlist item
+        f       - jump 10 seconds forward in currently played item
+

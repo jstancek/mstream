@@ -1,0 +1,6 @@
+*.pyc
+*~
+libcelt.so
+celt-0.7.0
+Mumble_pb2.py
+mstream.log
